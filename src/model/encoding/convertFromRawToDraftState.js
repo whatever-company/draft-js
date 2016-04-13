@@ -13,6 +13,7 @@
 'use strict';
 
 var ContentBlock = require('ContentBlock');
+var ContentState = require('ContentState');
 var DraftEntity = require('DraftEntity');
 var Immutable = require('immutable');
 
@@ -27,7 +28,7 @@ var {Map} = Immutable;
 
 function convertFromRawToDraftState(
   rawState: RawDraftContentState
-): Array<ContentBlock> {
+): ContentState {
   var {blocks, entityMap} = rawState;
 
   var fromStorageToLocal = {};
@@ -40,7 +41,7 @@ function convertFromRawToDraftState(
     }
   );
 
-  return blocks.map(
+  var contentBlocks = blocks.map(
     block => {
       var {key, type, text, depth, inlineStyleRanges, entityRanges, data} = block;
       key = key || generateRandomKey();
@@ -64,6 +65,8 @@ function convertFromRawToDraftState(
       return new ContentBlock({key, type, text, depth, characterList, data});
     }
   );
+
+  return ContentState.createFromBlockArray(contentBlocks);
 }
 
 module.exports = convertFromRawToDraftState;
